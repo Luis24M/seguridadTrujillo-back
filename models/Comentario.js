@@ -16,11 +16,11 @@ const Comentario = sequelize.define('Comentario', {
             key: 'id_incidente',
         },
     },
-    id_usuario: {
+    uid: {
         type: DataTypes.INTEGER,
         references: {
             model: Usuario,
-            key: 'id_usuario',
+            key: 'uid',
         },
     },
     contenido: DataTypes.TEXT,

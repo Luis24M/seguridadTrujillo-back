@@ -9,11 +9,11 @@ const Incidente = sequelize.define('Incidente', {
         primaryKey: true,
         autoIncrement: true,
     },
-    id_usuario: {
+    uid: {
         type: DataTypes.INTEGER,
         references: {
             model: Usuario,
-            key: 'id_usuario',
+            key: 'uid',
         },
     },
     id_tipo_incidente: {
