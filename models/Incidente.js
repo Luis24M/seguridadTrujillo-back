@@ -24,8 +24,7 @@ const Incidente = sequelize.define('Incidente', {
         },
     },
     latitud: DataTypes.DECIMAL(10, 8),
-    longitud: DataTypes.DECIMAL(11, 8),
-    direccion: DataTypes.STRING(255),
+    longitud: DataTypes.DECIMAL(10, 8),
     descripcion: DataTypes.TEXT,
     fecha_hora: DataTypes.DATE,
 }, {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const TipoIncidente = require('../models/TipoIncidente');
+const TipoPuntoSeguro = require('../models/TipoPuntoSeguro');
 
 router.get('/', async (req, res) => {
     try {

@@ -17,8 +17,7 @@ const PuntoSeguro = sequelize.define('PuntoSeguro', {
     },
     nombre: DataTypes.STRING(100),
     latitud: DataTypes.DECIMAL(10, 8),
-    longitud: DataTypes.DECIMAL(11, 8),
-    direccion: DataTypes.STRING(255),
+    longitud: DataTypes.DECIMAL(10, 8),
     telefono: DataTypes.STRING(20),
     horario: DataTypes.STRING(100),
 }, {

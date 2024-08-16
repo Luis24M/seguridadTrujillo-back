@@ -1,16 +1,25 @@
+const admin = require('firebase-admin');
+
+// Inicializar la app de Firebase Admin (asegúrate de tener las credenciales correctas)
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(), // o usa `admin.credential.cert(serviceAccount)` si tienes un archivo de credenciales
+  });
+}
+
 const verifyToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Asumiendo que el token viene en el header Authorization: Bearer <token>
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
   if (!token) {
-      return res.status(403).json({ message: 'Token no proporcionado' });
+    return res.status(401).json({ error: 'Acceso denegado, token requerido' });
   }
 
   try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      req.user = decodedToken;
-      next();
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.user = decodedToken;
+    next();
   } catch (error) {
-      console.error('Error verificando token:', error);
-      res.status(403).json({ message: 'Token no válido' });
+    res.status(401).json({ error: 'Token inválido' });
   }
 };
 

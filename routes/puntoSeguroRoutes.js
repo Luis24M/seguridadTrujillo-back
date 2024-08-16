@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const PuntoSeguro = require('../models/PuntoSeguro');
+const TipoPuntoSeguro = require('../models/TipoPuntoSeguro');
 const verifyToken = require('../middlewares/authMiddleware');
 
 // Crear un punto seguro
-router.post('/crear-punto-seguro', verifyToken, async (req, res) => {
-    const { id_tipo_punto_seguro, nombre, latitud, longitud, direccion, telefono, horario } = req.body;
+router.post('/crear-punto-seguro', async (req, res) => {
+    const { id_tipo_punto_seguro, nombre, latitud, longitud, telefono, horario } = req.body;
 
     try {
         const puntoSeguro = await PuntoSeguro.create({
@@ -13,7 +14,6 @@ router.post('/crear-punto-seguro', verifyToken, async (req, res) => {
             nombre,
             latitud,
             longitud,
-            direccion,
             telefono,
             horario,
         });
@@ -26,10 +26,23 @@ router.post('/crear-punto-seguro', verifyToken, async (req, res) => {
 });
 
 // Obtener todos los puntos seguros
-router.get('/puntos-seguros', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const puntosSeguros = await PuntoSeguro.findAll();
-        res.status(200).json(puntosSeguros);
+        const respuesta = await Promise.all(puntosSeguros.map(async puntoSeguro => {
+            const tipoPuntoSeguro = await TipoPuntoSeguro.findByPk(puntoSeguro.id_tipo_punto_seguro);
+            return {
+                id_punto_seguro: puntoSeguro.id_punto_seguro,
+                id_tipo_punto_seguro: puntoSeguro.id_tipo_punto_seguro,
+                nombre: puntoSeguro.nombre,
+                latitud: puntoSeguro.latitud,
+                longitud: puntoSeguro.longitud,
+                telefono: puntoSeguro.telefono,
+                horario: puntoSeguro.horario,
+                tipo_punto_seguro: tipoPuntoSeguro.nombre,
+            };
+        }));
+        res.status(200).json(respuesta);
     } catch (error) {
         console.error('Error al obtener los puntos seguros:', error);
         res.status(500).send('Error al obtener los puntos seguros');
@@ -37,7 +50,7 @@ router.get('/puntos-seguros', async (req, res) => {
 });
 
 // Actualizar un punto seguro
-router.put('/actualizar-punto-seguro/:id', verifyToken, async (req, res) => {
+router.put('/actualizar-punto-seguro/:id', async (req, res) => {
     const { id } = req.params;
     const { id_tipo_punto_seguro, nombre, latitud, longitud, direccion, telefono, horario } = req.body;
 
@@ -52,7 +65,6 @@ router.put('/actualizar-punto-seguro/:id', verifyToken, async (req, res) => {
         puntoSeguro.nombre = nombre;
         puntoSeguro.latitud = latitud;
         puntoSeguro.longitud = longitud;
-        puntoSeguro.direccion = direccion;
         puntoSeguro.telefono = telefono;
         puntoSeguro.horario = horario;
 
@@ -66,7 +78,7 @@ router.put('/actualizar-punto-seguro/:id', verifyToken, async (req, res) => {
 });
 
 // Eliminar un punto seguro
-router.delete('/eliminar-punto-seguro/:id', verifyToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
