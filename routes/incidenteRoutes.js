@@ -1,13 +1,27 @@
-const express = reqire('express');
+const express = require('express');
 const router = express.Router();
 const Incidente = require('../models/Incidente');
+const verifyToken = require('../middlewares/authMiddleware');
 
-router.get('/incidentes', async (req, res) => {
+// Reportar incidente
+router.post('/reportar-incidente', verifyToken, async (req, res) => {
+    const { id_tipo_incidente, latitud, longitud, direccion, descripcion } = req.body;
+    const uid = req.uid;
+
     try {
-        const incidentes = await Incidente.findAll();
-        res.json(incidentes);
-    } catch (err) {
-        res.status(500).json({ error: 'Ocurrió un error al obtener los incidentes' });
+        await Incidente.create({
+            uid,
+            id_tipo_incidente,
+            latitud,
+            longitud,
+            direccion,
+            descripcion,
+        });
+
+        res.status(201).send('Incidente reportado exitosamente');
+    } catch (error) {
+        console.error('Error al reportar el incidente:', error);
+        res.status(500).send('Error al reportar el incidente');
     }
 });
 
